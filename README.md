@@ -48,11 +48,12 @@ workload/
 - Loaded all EDF files and labeled them as baseline (_1) or task (_2)
 - Applied 1-30 Hz bandpass filter, resampled to 256 Hz
 - Segmented into 2-second non-overlapping windows
-- Computed bandpower for theta (4-8 Hz), alpha (8-12 Hz), beta (13-30 Hz)
-  using Welch's method for each of the 22 EEG channels
+- Computed bandpower using Welch's method across six sub-bands: low theta
+  (4-6 Hz), high theta (6-8 Hz), low alpha (8-10 Hz), high alpha (10-12 Hz),
+  low beta (13-22 Hz), high beta (22-30 Hz) for each of the 22 EEG channels
 - Added 4 CSP features fitted only on training subjects to avoid leakage
 - Dropped ECG channel
-- Output: 4338 segments × 64 features saved to CSV
+- Output: 4338 segments × 184 features saved to CSV
 
 ### Step 2 — Modeling (Ansh, modeling.ipynb)
 - Loaded feature CSV from Step 1
@@ -68,17 +69,18 @@ workload/
 
 ## Results
 
-| Task                  | Best Model          | Val AUC | Test AUC | Test Bal. Acc |
-|-----------------------|---------------------|---------|----------|---------------|
-| Task 1: Baseline vs Task | Logistic Regression | 0.693   | 0.754    | 0.559         |
-| Task 2: Hard vs Easy  | Logistic Regression | 0.614   | 0.455    | 0.516         |
+| Task                     | Best Model          | Val AUC | Test AUC | Test Bal. Acc |
+|--------------------------|---------------------|---------|----------|---------------|
+| Task 1: Baseline vs Task | Logistic Regression | 0.686   | 0.649    | 0.554         |
+| Task 2: Hard vs Easy     | Logistic Regression | 0.346   | 0.459    | 0.484         |
 
-- Task 1 (baseline vs task) achieved AUC 0.754 — model can reliably detect 
-  when a subject is doing mental arithmetic vs resting
-- Task 2 (hard vs easy) was near chance (AUC 0.455) — suggesting alpha 
-  suppression alone is not sufficient to distinguish workload difficulty 
-  across subjects
-- Beta band had the highest total feature importance, followed by alpha and theta
+- Task 1 (baseline vs task) achieved AUC 0.649 — model can detect when a
+  subject is doing mental arithmetic vs resting, though cross-subject
+  generalization is hard
+- Task 2 (hard vs easy) was near chance (AUC 0.459) — alpha suppression
+  alone is not sufficient to distinguish workload difficulty across subjects
+- Adding sub-band features actually hurt Task 1 generalization compared to
+  broad bands, suggesting simpler representations transfer better cross-subject
 
 ---
 
@@ -86,7 +88,10 @@ workload/
 - Class imbalance in Task 1 (baseline segments outnumber task segments) hurt task recall
 - Hard/easy labels were defined using alpha suppression — not ground truth difficulty
 - Cross-subject generalization is inherently hard; per-subject models might do better
-- Future work: try sub-frequency bands, time-series features, or deep learning
+- The dataset contains behavioral labels (Group G vs Group B) that would make
+  better Task 2 labels than our EEG-derived proxy
+- Future work: use behavioral ground truth labels, try within-subject models,
+  or explore deep learning approaches
 
 ---
 
