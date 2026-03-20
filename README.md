@@ -48,9 +48,8 @@ workload/
 - Loaded all EDF files and labeled them as baseline (_1) or task (_2)
 - Applied 1-30 Hz bandpass filter, resampled to 256 Hz
 - Segmented into 2-second non-overlapping windows
-- Computed bandpower using Welch's method across six sub-bands: low theta
-  (4-6 Hz), high theta (6-8 Hz), low alpha (8-10 Hz), high alpha (10-12 Hz),
-  low beta (13-22 Hz), high beta (22-30 Hz) for each of the 22 EEG channels
+- Computed bandpower using Welch's method across six sub-bands: low theta (4 to 6 Hz), high theta (6 to 8 Hz), low alpha (8 to 10 Hz), high alpha (10 to
+12 Hz), low beta (13 to 20 Hz), and high beta (20 to 30 Hz), across all 20 channels.
 - Added 4 CSP features fitted only on training subjects to avoid leakage
 - Dropped ECG channel
 - Output: 4338 segments × 184 features saved to CSV
