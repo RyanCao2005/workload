@@ -56,9 +56,11 @@ workload/
 
 ### Step 2 — Modeling (Ansh, modeling.ipynb)
 - Loaded feature CSV from Step 1
-- Used StratifiedGroupKFold (5-fold, subject-level) to prevent data leakage
+- Implemented a proper 3-way subject-level split (25 train / 5 val / 6 test)
+  to avoid data snooping — model selected on val, final numbers reported on test only
 - Task 1: classify baseline vs task segments
 - Task 2: within task only, classify hard vs easy using alpha suppression
+  (threshold derived from train subjects only)
 - Models compared: Logistic Regression, SVM, Random Forest
 - Evaluated using balanced accuracy and AUC
 
@@ -66,23 +68,24 @@ workload/
 
 ## Results
 
-| Model               | Task1 BalAcc | Task1 AUC | Task2 BalAcc | Task2 AUC |
-|---------------------|-------------|-----------|-------------|-----------|
-| Logistic Regression | 0.609       | 0.705     | 0.634       | 0.717     |
-| SVM                 | 0.604       | 0.723     | 0.678       | 0.730     |
-| Random Forest       | 0.604       | 0.755     | 0.713       | 0.769     |
+| Task                  | Best Model          | Val AUC | Test AUC | Test Bal. Acc |
+|-----------------------|---------------------|---------|----------|---------------|
+| Task 1: Baseline vs Task | Logistic Regression | 0.693   | 0.754    | 0.559         |
+| Task 2: Hard vs Easy  | Logistic Regression | 0.614   | 0.455    | 0.516         |
 
-- Random Forest performed best on both tasks
-- Task 2 (hard vs easy) was easier to classify than Task 1
-- Beta band had the highest total feature importance (0.31), 
-  followed by theta (0.27) and alpha (0.27)
+- Task 1 (baseline vs task) achieved AUC 0.754 — model can reliably detect 
+  when a subject is doing mental arithmetic vs resting
+- Task 2 (hard vs easy) was near chance (AUC 0.455) — suggesting alpha 
+  suppression alone is not sufficient to distinguish workload difficulty 
+  across subjects
+- Beta band had the highest total feature importance, followed by alpha and theta
 
 ---
 
 ## Limitations & Future Work
-- Class imbalance in Task 1 (3222 baseline vs 1116 task) hurt task recall
-- Hard/easy labels were defined by us using alpha suppression — not ground truth
-- All features were cross-subject which is hard; per-subject models might do better
+- Class imbalance in Task 1 (baseline segments outnumber task segments) hurt task recall
+- Hard/easy labels were defined using alpha suppression — not ground truth difficulty
+- Cross-subject generalization is inherently hard; per-subject models might do better
 - Future work: try sub-frequency bands, time-series features, or deep learning
 
 ---
